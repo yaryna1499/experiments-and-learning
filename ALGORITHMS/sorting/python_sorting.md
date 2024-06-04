@@ -1,0 +1,7 @@
+The Python sort() and sorted() functions use a hybrid sorting algorithm called Timsort, which is a combination of merge sort and insertion sort. Timsort has a worst-case time complexity of O(n log n), where n is the number of elements to be sorted. It is an adaptive algorithm, which means it performs well on both small and large datasets, and it can take advantage of existing order in the data to sort it more efficiently. Timsort is the default sorting algorithm used in Python since version 2.3.
+
+Timsort was developed by Tim Peters in 2002 and is based on merge sort, which is a divide-and-conquer algorithm that repeatedly divides the input data into smaller sub-arrays, sorts them, and then merges them back together to form a sorted array. Timsort improves upon merge sort by using insertion sort for small sub-arrays, which can be more efficient than merge sort for small datasets.
+
+Timsort is particularly well-suited for sorting large datasets with existing order, as it can take advantage of this order to sort the data more efficiently. For example, if an array is already partially sorted, Timsort can sort it more quickly than other sorting algorithms.
+
+In summary, the Python sort() and sorted() functions use the Timsort algorithm for sorting, which is a hybrid sorting algorithm that combines merge sort and insertion sort. Timsort has a worst-case time complexity of O(n log n) and is well-suited for sorting large datasets with existing order.
