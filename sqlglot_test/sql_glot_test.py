@@ -1,14 +1,24 @@
-from sqlglot import parse_one
+from sqlglot import parse_one, expressions as exp
+from typing import Sequence
 sql_create_view = """
-CREATE VIEW IF NOT EXISTS USEquityMarketData.TradeOnlyAdjustedMinuteBarIndustryStandard 
-AS SELECT TradeDate, BarDateTime, Ticker, ASID, ROUND(PriceAdjFactor * t.FirstTradePrice, 4) as FirstTradePrice, 
-ROUND(PriceAdjFactor * t.HighTradePrice, 4) as HighTradePrice, ROUND(PriceAdjFactor * t.LowTradePrice, 4) as LowTradePrice, 
-ROUND(PriceAdjFactor * t.LastTradePrice, 4) as LastTradePrice, ROUND(PriceAdjFactor * t.VolumeWeightPrice, 6) as VolumeWeightPrice, 
-toUInt64(ROUND(t.Volume / VolumeAdjFactor)) as Volume, TotalTrades, eqGetPriceFactorByTicker(Ticker, BarDateTime) as PriceAdjFactor, 
-eqGetVolumeFactorByTicker(Ticker, BarDateTime) as VolumeAdjFactor FROM USEquityMarketData.TradeOnlyMinuteBarIndustryStandard t
+CREATE VIEW IF NOT EXISTS USEquityReferenceData.ISINSecIdLookupBase
+AS SELECT
+    SecId,
+    ISIN,
+    toDate(splitByChar(':', ISINStartToEndDate)[1]) as StartDate,
+    toDate(splitByChar(':', ISINStartToEndDate)[2]) as EndDate
+FROM (
+    SELECT * 
+    FROM USEquityReferenceData.SecMasterBase 
+    WHERE not has(ISIN, '')
+)
+ARRAY JOIN 
+    ISIN as ISIN, 
+    ISINStartToEndDate as ISINStartToEndDate
 """
 # Try parse with dialect="clickhouse"
 root_view = parse_one(sql_create_view, read="clickhouse")
+from_exp = root_view.find(exp.From)
+from_table = from_exp.find(exp.Table)
+print(repr(from_table))
 
-# Print the parsed output
-print(root_view.__repr__)
